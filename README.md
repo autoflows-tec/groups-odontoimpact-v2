@@ -128,10 +128,10 @@ src/
 ### Instalação
 ```bash
 # Clone o repositório
-git clone <URL_DO_SEU_REPOSITORIO>
+git clone https://github.com/autoflows-tec/groups-odontoimpact-v2.git
 
 # Entre no diretório
-cd GROUPS-ODONTOIMPACT-V2
+cd groups-odontoimpact-v2
 
 # Copie o arquivo de ambiente
 cp .env.example .env
