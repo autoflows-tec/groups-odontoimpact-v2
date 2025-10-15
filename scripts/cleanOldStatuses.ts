@@ -47,11 +47,12 @@ async function cleanOldStatuses() {
   console.log('🧹 Iniciando limpeza de status e resumos antigos...\n');
 
   try {
-    // 1. Buscar todos os grupos que têm status ou resumo preenchidos
+    // 1. Buscar todos os grupos que têm status ou resumo preenchidos (apenas não excluídos)
     console.log('📋 Buscando grupos com status/resumo...');
     const { data: groups, error: fetchError } = await supabase
       .from('Lista_de_Grupos')
-      .select('id, grupo, nome_grupo, status, resumo, ultima_atualizacao')
+      .select('id, grupo, nome_grupo, status, resumo, ultima_atualizacao, excluido')
+      .eq('excluido', false)
       .or('status.not.is.null,resumo.not.is.null');
 
     if (fetchError) {
