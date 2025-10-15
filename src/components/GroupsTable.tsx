@@ -123,18 +123,28 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-2">
-                    {getStatusIndicator(group.status, group.resumo, group.total_mensagens)}
-                    {(group.status || group.resumo) && onClearStatus && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onClearStatus(group.id)}
-                        className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
-                        title="Remover status (sem mensagens)"
-                      >
-                        <X className="h-3 w-3 text-red-500" />
-                      </Button>
-                    )}
+                    {(() => {
+                      const statusType = getStatusType(group.status, group.resumo, group.total_mensagens);
+                      // Só mostra o indicador se não for "sem-mensagens"
+                      if (statusType === 'sem-mensagens') return null;
+                      return getStatusIndicator(group.status, group.resumo, group.total_mensagens);
+                    })()}
+                    {(() => {
+                      const statusType = getStatusType(group.status, group.resumo, group.total_mensagens);
+                      // Só mostra o botão X se tiver status válido (não for "sem-mensagens")
+                      if (statusType === 'sem-mensagens') return null;
+                      return onClearStatus && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onClearStatus(group.id)}
+                          className="h-6 w-6 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+                          title="Remover status (sem mensagens)"
+                        >
+                          <X className="h-3 w-3 text-red-500" />
+                        </Button>
+                      );
+                    })()}
                   </div>
                 </TableCell>
               </TableRow>

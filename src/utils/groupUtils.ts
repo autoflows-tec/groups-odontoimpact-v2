@@ -124,8 +124,15 @@ export const getStatusType = (status: string | null, resumo: string | null, tota
   }
   
   // FALLBACK: Se tem conteúdo mas não corresponde a nenhuma categoria específica
-  console.log('→ Resultado: estavel (fallback padrão)');
-  return 'estavel';
+  // Apenas retorna 'estavel' se houver realmente um status ou resumo válido
+  if ((status && status.trim()) || (resumo && resumo.trim())) {
+    console.log('→ Resultado: estavel (fallback com dados)');
+    return 'estavel';
+  }
+
+  // Se chegou aqui sem dados, não deve ter status
+  console.log('→ Resultado: sem-mensagens (fallback sem dados)');
+  return 'sem-mensagens';
 };
 
 export const clearStatusWhenNoMessages = async (groupId: number) => {
