@@ -4,7 +4,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -12,10 +11,9 @@ export type ConfigurationType = 'squads' | 'heads' | 'gestores' | 'groups';
 
 interface ConfigurationMenuProps {
   onConfigurationSelect: (type: ConfigurationType) => void;
-  onCleanInvalidStatuses?: () => void;
 }
 
-export const ConfigurationMenu = ({ onConfigurationSelect, onCleanInvalidStatuses }: ConfigurationMenuProps) => {
+export const ConfigurationMenu = ({ onConfigurationSelect }: ConfigurationMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -55,17 +53,6 @@ export const ConfigurationMenu = ({ onConfigurationSelect, onCleanInvalidStatuse
         >
           Gerenciar Grupos
         </DropdownMenuItem>
-        {onCleanInvalidStatuses && (
-          <>
-            <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />
-            <DropdownMenuItem
-              onClick={onCleanInvalidStatuses}
-              className="text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 cursor-pointer"
-            >
-              🧹 Limpar Status Inválidos
-            </DropdownMenuItem>
-          </>
-        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

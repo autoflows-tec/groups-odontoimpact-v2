@@ -17,10 +17,9 @@ interface GroupsHeaderProps {
   statusSummary: StatusSummary;
   loading: boolean;
   onRefresh: () => void;
-  onCleanInvalidStatuses?: () => void;
 }
 
-export const GroupsHeader = ({ statusSummary, loading, onRefresh, onCleanInvalidStatuses }: GroupsHeaderProps) => {
+export const GroupsHeader = ({ statusSummary, loading, onRefresh }: GroupsHeaderProps) => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [configType, setConfigType] = useState<ConfigurationType | null>(null);
@@ -56,10 +55,7 @@ export const GroupsHeader = ({ statusSummary, loading, onRefresh, onCleanInvalid
             </div>
             
             {/* Configuration Menu */}
-            <ConfigurationMenu
-              onConfigurationSelect={handleConfigurationSelect}
-              onCleanInvalidStatuses={onCleanInvalidStatuses}
-            />
+            <ConfigurationMenu onConfigurationSelect={handleConfigurationSelect} />
             
             {/* Dark Mode Toggle */}
             <Button
