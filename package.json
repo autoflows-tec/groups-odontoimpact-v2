@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "clean-old-statuses": "tsx scripts/cleanOldStatuses.ts",
-    "add-excluido-column": "tsx scripts/addExcluidoColumn.ts"
+    "add-excluido-column": "tsx scripts/addExcluidoColumn.ts",
+    "migrate:soft-delete": "tsx scripts/executeSoftDeleteMigration.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
