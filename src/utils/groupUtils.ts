@@ -137,11 +137,11 @@ export const getStatusType = (status: string | null, resumo: string | null, tota
 
 export const clearStatusWhenNoMessages = async (groupId: number) => {
   const { supabase } = await import('@/integrations/supabase/client');
-  
+
   try {
     const { error } = await supabase
       .from('Lista_de_Grupos')
-      .update({ 
+      .update({
         status: null,
         resumo: 'Sem mensagens no grupo'
       })
@@ -151,11 +151,95 @@ export const clearStatusWhenNoMessages = async (groupId: number) => {
       console.error('Erro ao limpar status:', error);
       throw error;
     }
-    
+
     console.log(`Status removido para o grupo ${groupId} (sem mensagens)`);
     return true;
   } catch (error) {
     console.error('Erro ao atualizar status do grupo:', error);
     return false;
+  }
+};
+
+export const clearAllInvalidStatuses = async () => {
+  const { supabase } = await import('@/integrations/supabase/client');
+
+  try {
+    console.log('🧹 Iniciando limpeza de status inválidos...');
+
+    // 1. Buscar todos os grupos
+    const { data: groups, error: fetchError } = await supabase
+      .from('Lista_de_Grupos')
+      .select('id, grupo, status, resumo');
+
+    if (fetchError) {
+      console.error('Erro ao buscar grupos:', fetchError);
+      throw fetchError;
+    }
+
+    if (!groups || groups.length === 0) {
+      console.log('Nenhum grupo encontrado');
+      return { success: true, cleaned: 0 };
+    }
+
+    // 2. Para cada grupo, verificar se tem mensagens
+    const groupsToClean: number[] = [];
+
+    for (const group of groups) {
+      // Verificar se o grupo tem status ou resumo preenchido
+      if (!group.status && !group.resumo) {
+        continue; // Já está limpo
+      }
+
+      // Verificar se o grupo tem mensagens
+      const { data: messages, error: msgError } = await supabase
+        .from('Lista_de_Mensagens')
+        .select('id', { count: 'exact', head: true })
+        .eq('grupoJid', group.grupo)
+        .limit(1);
+
+      if (msgError) {
+        console.error(`Erro ao verificar mensagens do grupo ${group.id}:`, msgError);
+        continue;
+      }
+
+      // Se não tem mensagens mas tem status/resumo, marcar para limpeza
+      const hasMessages = messages && messages.length > 0;
+      if (!hasMessages && (group.status || group.resumo)) {
+        groupsToClean.push(group.id);
+      }
+    }
+
+    console.log(`📋 Encontrados ${groupsToClean.length} grupos para limpar`);
+
+    // 3. Limpar todos os grupos marcados
+    if (groupsToClean.length > 0) {
+      const { error: updateError } = await supabase
+        .from('Lista_de_Grupos')
+        .update({
+          status: null,
+          resumo: null
+        })
+        .in('id', groupsToClean);
+
+      if (updateError) {
+        console.error('Erro ao limpar status:', updateError);
+        throw updateError;
+      }
+
+      console.log(`✅ ${groupsToClean.length} grupos limpos com sucesso`);
+    }
+
+    return {
+      success: true,
+      cleaned: groupsToClean.length,
+      groupIds: groupsToClean
+    };
+  } catch (error) {
+    console.error('❌ Erro ao limpar status inválidos:', error);
+    return {
+      success: false,
+      cleaned: 0,
+      error: error instanceof Error ? error.message : 'Erro desconhecido'
+    };
   }
 };

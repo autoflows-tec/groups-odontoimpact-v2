@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
-import { clearStatusWhenNoMessages } from "@/utils/groupUtils";
+import { clearStatusWhenNoMessages, clearAllInvalidStatuses } from "@/utils/groupUtils";
 
 type Group = Database['public']['Tables']['Lista_de_Grupos']['Row'] & {
   total_mensagens?: number;
@@ -345,12 +345,12 @@ export const useGroups = () => {
   const clearGroupStatus = async (groupId: number) => {
     try {
       const success = await clearStatusWhenNoMessages(groupId);
-      
+
       if (success) {
         // Atualizar estado local otimisticamente
-        setGroups(prevGroups => 
-          prevGroups.map(group => 
-            group.id === groupId 
+        setGroups(prevGroups =>
+          prevGroups.map(group =>
+            group.id === groupId
               ? { ...group, status: null, resumo: 'Sem mensagens no grupo' }
               : group
           )
@@ -361,7 +361,7 @@ export const useGroups = () => {
           description: "O status do grupo foi removido (sem mensagens).",
         });
       }
-      
+
       return success;
     } catch (err) {
       console.error('Erro ao limpar status:', err);
@@ -371,6 +371,46 @@ export const useGroups = () => {
         variant: "destructive",
       });
       return false;
+    }
+  };
+
+  const cleanAllInvalidStatuses = async () => {
+    try {
+      setRefreshing(true);
+      toast({
+        title: "Limpeza iniciada",
+        description: "Verificando grupos sem mensagens...",
+      });
+
+      const result = await clearAllInvalidStatuses();
+
+      if (result.success) {
+        // Recarregar os grupos após a limpeza
+        await fetchGroups();
+
+        toast({
+          title: "Limpeza concluída!",
+          description: `${result.cleaned} grupo(s) foram limpos.`,
+        });
+      } else {
+        toast({
+          title: "Erro na limpeza",
+          description: result.error || "Não foi possível completar a limpeza.",
+          variant: "destructive",
+        });
+      }
+
+      return result;
+    } catch (err) {
+      console.error('Erro ao limpar status inválidos:', err);
+      toast({
+        title: "Erro na limpeza",
+        description: "Ocorreu um erro durante a limpeza dos status.",
+        variant: "destructive",
+      });
+      return { success: false, cleaned: 0 };
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -385,6 +425,7 @@ export const useGroups = () => {
     createGroup,
     updateGroup,
     deleteGroup,
-    clearGroupStatus
+    clearGroupStatus,
+    cleanAllInvalidStatuses
   };
 };

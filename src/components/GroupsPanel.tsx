@@ -16,7 +16,7 @@ type Group = Database['public']['Tables']['Lista_de_Grupos']['Row'];
 type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens';
 
 const GroupsPanel = () => {
-  const { groups, loading, error, refreshing, handleRefresh, updateGroupField, clearGroupStatus } = useGroups();
+  const { groups, loading, error, refreshing, handleRefresh, updateGroupField, clearGroupStatus, cleanAllInvalidStatuses } = useGroups();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("todos");
   const [managementFilters, setManagementFilters] = useState<ManagementFilters>({
@@ -96,10 +96,11 @@ const GroupsPanel = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-odontoimpact-dark-bg">
-      <GroupsHeader 
+      <GroupsHeader
         statusSummary={statusSummary}
         loading={refreshing}
         onRefresh={handleRefresh}
+        onCleanInvalidStatuses={cleanAllInvalidStatuses}
       />
 
       {/* Content */}
