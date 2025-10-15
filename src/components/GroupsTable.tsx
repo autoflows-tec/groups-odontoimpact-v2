@@ -65,9 +65,8 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
         </TableHeader>
         <TableBody>
           {groups.map((group) => {
-            const hasMessagesToday = isMessageFromToday(group.ultima_atualizacao);
             const hasAnyMessages = group.status || group.resumo;
-            
+
             return (
               <TableRow key={group.id} className="border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-odontoimpact-dark-card/50">
                 <TableCell className="text-odontoimpact-dark dark:text-white font-inter font-medium">
@@ -104,20 +103,16 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
                   {formatDate(group.ultima_atualizacao)}
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
-                  {!hasAnyMessages 
-                    ? "Sem mensagens no grupo"
-                    : !hasMessagesToday 
-                      ? "Não há mensagens hoje no grupo"
-                      : (group.status || "Não informado")
+                  {hasAnyMessages
+                    ? (group.status || "Não informado")
+                    : "Sem mensagens no grupo"
                   }
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
                   <div className="whitespace-normal break-words">
-                    {!hasAnyMessages 
-                      ? "Sem mensagens no grupo"
-                      : !hasMessagesToday 
-                        ? "Não há mensagens hoje no grupo"
-                        : (group.resumo || "Sem descrição")
+                    {hasAnyMessages
+                      ? (group.resumo || "Sem descrição")
+                      : "Sem mensagens no grupo"
                     }
                   </div>
                 </TableCell>
