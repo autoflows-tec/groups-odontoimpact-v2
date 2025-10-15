@@ -65,6 +65,7 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
         </TableHeader>
         <TableBody>
           {groups.map((group) => {
+            const hasMessagesToday = isMessageFromToday(group.ultima_atualizacao);
             const hasAnyMessages = group.status || group.resumo;
 
             return (
@@ -103,16 +104,20 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
                   {formatDate(group.ultima_atualizacao)}
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
-                  {hasAnyMessages
-                    ? (group.status || "Não informado")
-                    : "Sem mensagens no grupo"
+                  {!hasAnyMessages
+                    ? "Sem mensagens no grupo"
+                    : !hasMessagesToday
+                      ? "Não há mensagens hoje no grupo"
+                      : (group.status || "Não informado")
                   }
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
                   <div className="whitespace-normal break-words">
-                    {hasAnyMessages
-                      ? (group.resumo || "Sem descrição")
-                      : "Sem mensagens no grupo"
+                    {!hasAnyMessages
+                      ? "Sem mensagens no grupo"
+                      : !hasMessagesToday
+                        ? "Não há mensagens hoje no grupo"
+                        : (group.resumo || "Sem descrição")
                     }
                   </div>
                 </TableCell>
