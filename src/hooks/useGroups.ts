@@ -22,11 +22,12 @@ export const useGroups = () => {
       console.log('🔄 fetchGroups: Iniciando busca pelos grupos...');
       setLoading(true);
       setError(null);
-      
-      // Buscar grupos
+
+      // Buscar grupos (apenas não excluídos)
       const { data: groupsData, error: supabaseError, count } = await supabase
         .from('Lista_de_Grupos')
         .select('*', { count: 'exact' })
+        .eq('excluido', false)
         .order('id', { ascending: false });
 
       console.log('📊 Resposta do Supabase:', { data: groupsData, error: supabaseError, count });
@@ -301,41 +302,42 @@ export const useGroups = () => {
       setLoading(true);
       setError(null);
 
-      console.log('🔄 Deletando grupo:', groupId);
+      console.log('🔄 Marcando grupo como excluído (soft delete):', groupId);
 
-      const { error: deleteError } = await supabase
+      // Soft delete: marcar como excluído em vez de deletar
+      const { error: updateError } = await supabase
         .from('Lista_de_Grupos')
-        .delete()
+        .update({ excluido: true })
         .eq('id', groupId);
 
-      if (deleteError) {
-        console.error('❌ Erro ao deletar grupo:', deleteError);
-        throw deleteError;
+      if (updateError) {
+        console.error('❌ Erro ao marcar grupo como excluído:', updateError);
+        throw updateError;
       }
 
-      console.log('✅ Grupo deletado:', groupId);
-      
-      // Remover da lista de grupos
-      setGroups(prevGroups => 
+      console.log('✅ Grupo marcado como excluído:', groupId);
+
+      // Remover da lista de grupos (visualmente)
+      setGroups(prevGroups =>
         prevGroups.filter(group => group.id !== groupId)
       );
 
       toast({
         title: "Grupo removido!",
-        description: `O grupo foi removido com sucesso.`,
+        description: `O grupo foi removido da visualização.`,
       });
 
     } catch (err) {
-      console.error('💥 Erro ao deletar grupo:', err);
+      console.error('💥 Erro ao remover grupo:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
-      setError(`Erro ao deletar grupo: ${errorMessage}`);
-      
+      setError(`Erro ao remover grupo: ${errorMessage}`);
+
       toast({
         title: "Erro ao remover grupo",
         description: errorMessage,
         variant: "destructive",
       });
-      
+
       throw err;
     } finally {
       setLoading(false);

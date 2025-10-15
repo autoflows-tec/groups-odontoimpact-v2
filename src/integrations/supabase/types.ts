@@ -64,6 +64,7 @@ export type Database = {
       }
       Lista_de_Grupos: {
         Row: {
+          excluido: boolean
           gestor: string | null
           grupo: string
           head: string | null
@@ -76,6 +77,7 @@ export type Database = {
           ultima_atualizacao: string | null
         }
         Insert: {
+          excluido?: boolean
           gestor?: string | null
           grupo: string
           head?: string | null
@@ -88,6 +90,7 @@ export type Database = {
           ultima_atualizacao?: string | null
         }
         Update: {
+          excluido?: boolean
           gestor?: string | null
           grupo?: string
           head?: string | null
