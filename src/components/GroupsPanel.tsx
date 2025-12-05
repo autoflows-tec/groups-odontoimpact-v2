@@ -5,7 +5,7 @@ import { Loader2, AlertCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGroups } from "@/hooks/useGroups";
-import { getStatusType } from "@/utils/groupUtils";
+import { getStatusType, hasInteractionToday } from "@/utils/groupUtils";
 import { GroupsHeader } from "./GroupsHeader";
 import { GroupsSearch, ManagementFilters } from "./GroupsSearch";
 import { GroupsStatusSummary } from "./GroupsStatusSummary";
@@ -13,7 +13,7 @@ import { GroupsTable } from "./GroupsTable";
 import { GroupsPagination } from "./GroupsPagination";
 
 type Group = Database['public']['Tables']['Lista_de_Grupos']['Row'];
-type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens';
+type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens' | 'sem-interacao';
 
 const GroupsPanel = () => {
   const { groups, loading, error, refreshing, handleRefresh, updateGroupField, clearGroupStatus } = useGroups();
@@ -31,16 +31,28 @@ const GroupsPanel = () => {
   const filteredGroups = groups.filter(group => {
     // Filtro por nome
     const matchesSearch = (group.nome_grupo || group.grupo || '').toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     // Filtro por status
     const groupStatusType = getStatusType(group.status, group.resumo, group.total_mensagens);
+
+    // Filtro especial para "sem interação"
+    if (statusFilter === 'sem-interacao') {
+      const noInteractionToday = !hasInteractionToday(group.ultima_atualizacao);
+      const matchesStatus = noInteractionToday;
+      const matchesSquad = !managementFilters.squad || group.squad === managementFilters.squad;
+      const matchesHead = !managementFilters.head || group.head === managementFilters.head;
+      const matchesGestor = !managementFilters.gestor || group.gestor === managementFilters.gestor;
+
+      return matchesSearch && matchesStatus && matchesSquad && matchesHead && matchesGestor;
+    }
+
     const matchesStatus = statusFilter === 'todos' || groupStatusType === statusFilter;
-    
+
     // Filtros de gestão
     const matchesSquad = !managementFilters.squad || group.squad === managementFilters.squad;
     const matchesHead = !managementFilters.head || group.head === managementFilters.head;
     const matchesGestor = !managementFilters.gestor || group.gestor === managementFilters.gestor;
-    
+
     return matchesSearch && matchesStatus && matchesSquad && matchesHead && matchesGestor;
   });
 
@@ -56,10 +68,16 @@ const GroupsPanel = () => {
   }, [searchTerm, statusFilter, managementFilters]);
 
   const getStatusSummary = () => {
-    let estavel = 0, alerta = 0, critico = 0;
-    
-    filteredGroups.forEach(group => {
+    let estavel = 0, alerta = 0, critico = 0, semInteracao = 0;
+
+    groups.forEach(group => {
       const statusType = getStatusType(group.status, group.resumo, group.total_mensagens);
+
+      // Contar grupos sem interação hoje
+      if (!hasInteractionToday(group.ultima_atualizacao)) {
+        semInteracao++;
+      }
+
       switch (statusType) {
         case 'estavel':
           estavel++;
@@ -72,8 +90,8 @@ const GroupsPanel = () => {
           break;
       }
     });
-    
-    return { estavel, alerta, critico };
+
+    return { estavel, alerta, critico, semInteracao };
   };
 
   const statusSummary = getStatusSummary();

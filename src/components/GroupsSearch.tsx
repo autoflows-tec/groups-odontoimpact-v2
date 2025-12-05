@@ -1,4 +1,4 @@
-import { Search, Filter, TrendingUp, AlertTriangle, XCircle, List, Users, UserCheck, User } from "lucide-react";
+import { Search, Filter, TrendingUp, AlertTriangle, XCircle, List, Users, UserCheck, User, MessageCircleOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,7 +6,7 @@ import { useSquads } from "@/hooks/useSquads";
 import { useHeads } from "@/hooks/useHeads";
 import { useGestores } from "@/hooks/useGestores";
 
-type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens';
+type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens' | 'sem-interacao';
 
 export interface ManagementFilters {
   squad: string;
@@ -34,6 +34,8 @@ const getStatusIcon = (status: StatusFilter) => {
       return <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />;
     case 'sem-mensagens':
       return <List className="h-4 w-4 text-gray-500 dark:text-gray-400" />;
+    case 'sem-interacao':
+      return <MessageCircleOff className="h-4 w-4 text-gray-600 dark:text-gray-400" />;
     default:
       return <Filter className="h-4 w-4 text-odontoimpact-gray dark:text-gray-400" />;
   }
@@ -49,6 +51,8 @@ const getStatusLabel = (status: StatusFilter) => {
       return 'Críticos';
     case 'sem-mensagens':
       return 'Sem Mensagens';
+    case 'sem-interacao':
+      return 'Sem Interação Hoje';
     default:
       return 'Todos os Status';
   }
@@ -131,6 +135,12 @@ export const GroupsSearch = ({
                     <div className="flex items-center gap-2">
                       <List className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                       {getStatusLabel('sem-mensagens')}
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="sem-interacao" className="text-odontoimpact-dark dark:text-white font-inter">
+                    <div className="flex items-center gap-2">
+                      <MessageCircleOff className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                      {getStatusLabel('sem-interacao')}
                     </div>
                   </SelectItem>
                 </SelectContent>

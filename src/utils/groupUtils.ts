@@ -20,12 +20,26 @@ export const formatDate = (dateString: string | null) => {
 
 export const isMessageFromToday = (dateString: string | null) => {
   if (!dateString) return false;
-  
+
   try {
     const messageDate = new Date(dateString);
     const today = new Date();
-    
+
     return messageDate.toDateString() === today.toDateString();
+  } catch {
+    return false;
+  }
+};
+
+export const hasInteractionToday = (ultimaAtualizacao: string | null) => {
+  if (!ultimaAtualizacao) return false;
+
+  try {
+    const lastUpdateDate = new Date(ultimaAtualizacao);
+    const today = new Date();
+
+    // Verificar se a última atualização foi hoje
+    return lastUpdateDate.toDateString() === today.toDateString();
   } catch {
     return false;
   }

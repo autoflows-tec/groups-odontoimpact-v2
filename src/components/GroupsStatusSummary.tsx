@@ -1,13 +1,14 @@
-import { Circle, TrendingUp, AlertTriangle, XCircle } from "lucide-react";
+import { Circle, TrendingUp, AlertTriangle, XCircle, MessageCircleOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens';
+type StatusFilter = 'todos' | 'estavel' | 'alerta' | 'critico' | 'sem-mensagens' | 'sem-interacao';
 
 interface StatusSummary {
   estavel: number;
   alerta: number;
   critico: number;
+  semInteracao?: number;
 }
 
 interface GroupsStatusSummaryProps {
@@ -18,7 +19,7 @@ interface GroupsStatusSummaryProps {
 
 export const GroupsStatusSummary = ({ statusSummary, activeFilter, onFilterChange }: GroupsStatusSummaryProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {/* Estável */}
       <Card 
         className={cn(
@@ -90,11 +91,11 @@ export const GroupsStatusSummary = ({ statusSummary, activeFilter, onFilterChang
       </Card>
 
       {/* Crítico */}
-      <Card 
+      <Card
         className={cn(
           "bg-white dark:bg-odontoimpact-dark-card border-2 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md",
-          activeFilter === 'critico' 
-            ? "border-red-500 dark:border-red-400 ring-2 ring-red-200 dark:ring-red-800" 
+          activeFilter === 'critico'
+            ? "border-red-500 dark:border-red-400 ring-2 ring-red-200 dark:ring-red-800"
             : "border-red-200 dark:border-red-700 hover:border-red-300 dark:hover:border-red-600"
         )}
         onClick={() => onFilterChange(activeFilter === 'critico' ? 'todos' : 'critico')}
@@ -103,8 +104,8 @@ export const GroupsStatusSummary = ({ statusSummary, activeFilter, onFilterChang
           <div className="flex items-center space-x-3">
             <div className={cn(
               "p-2 rounded-md transition-colors duration-200",
-              activeFilter === 'critico' 
-                ? "bg-red-200 dark:bg-red-800/50" 
+              activeFilter === 'critico'
+                ? "bg-red-200 dark:bg-red-800/50"
                 : "bg-red-100 dark:bg-red-900/30"
             )}>
               <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
@@ -118,6 +119,41 @@ export const GroupsStatusSummary = ({ statusSummary, activeFilter, onFilterChang
           </div>
           {activeFilter === 'critico' && (
             <div className="mt-2 text-xs text-red-600 dark:text-red-400 font-inter">
+              ✓ Filtro ativo - clique para remover
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Sem Interação */}
+      <Card
+        className={cn(
+          "bg-white dark:bg-odontoimpact-dark-card border-2 shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md",
+          activeFilter === 'sem-interacao'
+            ? "border-gray-500 dark:border-gray-400 ring-2 ring-gray-200 dark:ring-gray-800"
+            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+        )}
+        onClick={() => onFilterChange(activeFilter === 'sem-interacao' ? 'todos' : 'sem-interacao')}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className={cn(
+              "p-2 rounded-md transition-colors duration-200",
+              activeFilter === 'sem-interacao'
+                ? "bg-gray-200 dark:bg-gray-800/50"
+                : "bg-gray-100 dark:bg-gray-900/30"
+            )}>
+              <MessageCircleOff className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            </div>
+            <div>
+              <p className="text-sm font-inter text-odontoimpact-gray dark:text-gray-300">Sem Interação Hoje</p>
+              <p className="text-2xl font-poppins font-semibold text-gray-600 dark:text-gray-400">
+                {statusSummary.semInteracao || 0}
+              </p>
+            </div>
+          </div>
+          {activeFilter === 'sem-interacao' && (
+            <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 font-inter">
               ✓ Filtro ativo - clique para remover
             </div>
           )}
