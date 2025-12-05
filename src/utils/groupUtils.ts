@@ -45,6 +45,25 @@ export const hasInteractionToday = (ultimaAtualizacao: string | null) => {
   }
 };
 
+export const formatResponseTime = (minutes: number | null): string => {
+  if (minutes === null || minutes === undefined) {
+    return "Não disponível";
+  }
+
+  if (minutes < 60) {
+    return `${minutes} min`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (remainingMinutes === 0) {
+    return `${hours} h`;
+  }
+
+  return `${hours} h ${remainingMinutes} min`;
+};
+
 export const getStatusType = (status: string | null, resumo: string | null, totalMensagens?: number) => {
   console.log('🔍 getStatusType:', { status, resumo, totalMensagens });
 

@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { formatDate, isMessageFromToday, getStatusType } from "@/utils/groupUtils";
+import { formatDate, isMessageFromToday, getStatusType, formatResponseTime } from "@/utils/groupUtils";
 import { EditableSelectCell } from "./EditableSelectCell";
 import { ConfirmationDialog } from "./ConfirmationDialog";
 import { useSquads } from "@/hooks/useSquads";
@@ -88,6 +88,7 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Head</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Gestor</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Data de Última Atualização</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Tempo Médio</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status do Grupo</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Situação</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-24">Status</TableHead>
@@ -133,6 +134,9 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
                   {formatDate(group.ultima_atualizacao)}
+                </TableCell>
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
+                  {formatResponseTime(group.tempo_medio_resposta)}
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
                   {!hasAnyMessages
