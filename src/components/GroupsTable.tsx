@@ -1,4 +1,5 @@
-import { Circle, X } from "lucide-react";
+import { useState } from "react";
+import { Circle, X, Trash2 } from "lucide-react";
 import { Database } from "@/integrations/supabase/types";
 import {
   Table,
@@ -11,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatDate, isMessageFromToday, getStatusType } from "@/utils/groupUtils";
 import { EditableSelectCell } from "./EditableSelectCell";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 import { useSquads } from "@/hooks/useSquads";
 import { useHeads } from "@/hooks/useHeads";
 import { useGestores } from "@/hooks/useGestores";
@@ -21,6 +23,7 @@ interface GroupsTableProps {
   groups: Group[];
   onUpdateGroup: (groupId: number, field: 'squad' | 'head' | 'gestor', value: string | null) => Promise<void>;
   onClearStatus?: (groupId: number) => Promise<void>;
+  onDeleteGroup?: (groupId: number) => Promise<void>;
 }
 
 const getStatusIndicator = (status: string | null, resumo: string | null, totalMensagens?: number) => {
@@ -40,14 +43,41 @@ const getStatusIndicator = (status: string | null, resumo: string | null, totalM
   }
 };
 
-export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTableProps) => {
+export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGroup }: GroupsTableProps) => {
   // Carregar dados de configuração
   const { squads, loading: squadsLoading } = useSquads();
   const { heads, loading: headsLoading } = useHeads();
   const { gestores, loading: gestoresLoading } = useGestores();
 
+  // Estado para o dialog de confirmação de exclusão
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<number | null>(null);
+  const [groupToDeleteName, setGroupToDeleteName] = useState<string>("");
+  const [deleting, setDeleting] = useState(false);
 
   const isConfigLoading = squadsLoading || headsLoading || gestoresLoading;
+
+  const handleDeleteClick = (groupId: number, groupName: string) => {
+    setGroupToDelete(groupId);
+    setGroupToDeleteName(groupName);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!groupToDelete || !onDeleteGroup) return;
+
+    setDeleting(true);
+    try {
+      await onDeleteGroup(groupToDelete);
+      setDeleteDialogOpen(false);
+      setGroupToDelete(null);
+      setGroupToDeleteName("");
+    } catch (error) {
+      console.error("Erro ao excluir grupo:", error);
+    } finally {
+      setDeleting(false);
+    }
+  };
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -61,6 +91,7 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status do Grupo</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Situação</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-24">Status</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-16">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -147,11 +178,35 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus }: GroupsTabl
                     })()}
                   </div>
                 </TableCell>
+                <TableCell className="text-center">
+                  {onDeleteGroup && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteClick(group.id, group.nome_grupo || group.grupo)}
+                      className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900/20"
+                      title="Excluir grupo"
+                    >
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
+                  )}
+                </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
+
+      <ConfirmationDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Excluir Grupo"
+        description={`Tem certeza que deseja excluir o grupo "${groupToDeleteName}"? Esta ação não poderá ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmDelete}
+        loading={deleting}
+      />
     </div>
   );
 };
