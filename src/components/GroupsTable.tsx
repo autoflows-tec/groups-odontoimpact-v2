@@ -83,16 +83,16 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
       <Table>
         <TableHeader>
           <TableRow className="border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-odontoimpact-dark-card/50">
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Nome do Grupo</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Squad</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Head</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Gestor</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Data de Última Atualização</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Tempo Médio</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status Tempo Resposta</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status do Grupo</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Situação</TableHead>
-            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-24">Status</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold min-w-[200px]">Nome do Grupo</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-32">Squad</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-32">Head</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-32">Gestor</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-40">Última Atualização</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-28">Tempo Médio</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold min-w-[250px]">Motivo Tempo</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold w-32">Status</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold min-w-[300px]">Situação</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-20">Indicador</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-16">Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -133,18 +133,26 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
                     loading={isConfigLoading}
                   />
                 </TableCell>
-                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter text-sm">
                   {formatDate(group.ultima_atualizacao)}
                 </TableCell>
-                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
-                  {formatResponseTime(group.tempo_medio_resposta_string)}
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter font-medium text-sm">
+                  <span className={`${
+                    group.tempo_medio_resposta_string?.toLowerCase() === 'n/a'
+                      ? 'text-gray-400 dark:text-gray-500'
+                      : 'text-odontoimpact-primary dark:text-odontoimpact-secondary'
+                  }`}>
+                    {formatResponseTime(group.tempo_medio_resposta_string)}
+                  </span>
                 </TableCell>
-                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
-                  <div className="whitespace-normal break-words max-w-xs">
-                    {group.status_tempo_resposta || "Não informado"}
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter text-xs">
+                  <div className="whitespace-normal break-words max-w-[250px] leading-tight">
+                    {group.status_tempo_resposta || (
+                      <span className="text-gray-400 dark:text-gray-500 italic">Aguardando análise...</span>
+                    )}
                   </div>
                 </TableCell>
-                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter font-medium text-sm">
                   {!hasAnyMessages
                     ? "Sem mensagens no grupo"
                     : !hasMessagesToday
