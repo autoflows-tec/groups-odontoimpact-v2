@@ -89,6 +89,7 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Gestor</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Data de Última Atualização</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Tempo Médio</TableHead>
+            <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status Tempo Resposta</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Status do Grupo</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold">Situação</TableHead>
             <TableHead className="text-odontoimpact-dark dark:text-white font-poppins font-semibold text-center w-24">Status</TableHead>
@@ -136,7 +137,12 @@ export const GroupsTable = ({ groups, onUpdateGroup, onClearStatus, onDeleteGrou
                   {formatDate(group.ultima_atualizacao)}
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
-                  {formatResponseTime(group.tempo_medio_resposta)}
+                  {formatResponseTime(group.tempo_medio_resposta_string)}
+                </TableCell>
+                <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
+                  <div className="whitespace-normal break-words max-w-xs">
+                    {group.status_tempo_resposta || "Não informado"}
+                  </div>
                 </TableCell>
                 <TableCell className="text-odontoimpact-gray dark:text-gray-300 font-inter">
                   {!hasAnyMessages

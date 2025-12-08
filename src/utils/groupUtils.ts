@@ -45,23 +45,14 @@ export const hasInteractionToday = (ultimaAtualizacao: string | null) => {
   }
 };
 
-export const formatResponseTime = (minutes: number | null): string => {
-  if (minutes === null || minutes === undefined) {
+export const formatResponseTime = (tempoFormatado: string | null): string => {
+  // Agora recebe o valor já formatado do banco de dados (ex: "2h 30min", "N/A")
+  // Não precisa mais fazer conversão, apenas retornar o valor ou fallback
+  if (!tempoFormatado || tempoFormatado.trim() === '') {
     return "Não disponível";
   }
 
-  if (minutes < 60) {
-    return `${minutes} min`;
-  }
-
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
-
-  if (remainingMinutes === 0) {
-    return `${hours} h`;
-  }
-
-  return `${hours} h ${remainingMinutes} min`;
+  return tempoFormatado;
 };
 
 export const getStatusType = (status: string | null, resumo: string | null, totalMensagens?: number) => {

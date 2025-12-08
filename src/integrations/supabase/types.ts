@@ -73,6 +73,8 @@ export type Database = {
           resumo: string | null
           squad: string | null
           status: string | null
+          status_tempo_resposta: string | null
+          tempo_medio_resposta_string: string | null
           timestamp: string | null
           ultima_atualizacao: string | null
         }
@@ -86,6 +88,8 @@ export type Database = {
           resumo?: string | null
           squad?: string | null
           status?: string | null
+          status_tempo_resposta?: string | null
+          tempo_medio_resposta_string?: string | null
           timestamp?: string | null
           ultima_atualizacao?: string | null
         }
@@ -99,6 +103,8 @@ export type Database = {
           resumo?: string | null
           squad?: string | null
           status?: string | null
+          status_tempo_resposta?: string | null
+          tempo_medio_resposta_string?: string | null
           timestamp?: string | null
           ultima_atualizacao?: string | null
         }
